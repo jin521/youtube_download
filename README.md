@@ -17,7 +17,12 @@ This repository contains a Rails application that allows you to download videos 
 git clone https://github.com/your-username/youtube_download.git
 ```
 
-2. Install dependencies: bundle install
+2. Install dependencies:
+
+```
+bundle install
+```
+
 3. Start the Rails server:
 
 ```
