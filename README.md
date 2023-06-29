@@ -1,24 +1,39 @@
 # README
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+# YouTube Download
 
-Things you may want to cover:
+This repository contains a Rails application that allows you to download videos from YouTube and store them in a storage service. It utilizes Sidekiq for background job processing and integrates with various external services.
 
-* Ruby version
+## Requirements
 
-* System dependencies
+- Ruby 3.1.1
+- Rails 7.0
 
-* Configuration
+## Installation
 
-* Database creation
+1. Clone the repository to your local machine:
 
-* Database initialization
+```
+git clone https://github.com/your-username/youtube_download.git
+```
 
-* How to run the test suite
+2. Install dependencies: bundle install
+3. Start the Rails server:
 
-* Services (job queues, cache servers, search engines, etc.)
+```
+bundle exec rails server
+```
 
-* Deployment instructions
+4. Access the application in your browser at `http://localhost:3000`.
 
-* ...
+## Usage
+
+## Configuration
+
+## Contributing
+
+Contributions to this project are welcome. If you find any issues or would like to suggest improvements, please open an issue or submit a pull request. Make sure to follow the project's code of conduct.
+
+## License
+
+This project is licensed under the [MIT License](LICENSE).
