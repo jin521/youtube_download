@@ -1,3 +1,6 @@
+# frozen_string_literal: true
+
+# The class is responsible for initiating the download and storage of a YouTube video.
 class TriggerDownloadAndStoreVideoFromYoutube < ActiveInteraction::Base
   string :youtube_url
 
@@ -19,7 +22,7 @@ class TriggerDownloadAndStoreVideoFromYoutube < ActiveInteraction::Base
 
     Cache.set("#{status_key}:status", 'pending')
 
-    bucket_name = Settings.google_cloud.storage_buckets.transcript_requests
+    bucket_name = 'big bucket' # Settings.google_cloud.storage_buckets.transcript_requests
 
     DownloadAndStoreVideoFromYoutube.perform_async(youtube_url, status_key, bucket_name)
 

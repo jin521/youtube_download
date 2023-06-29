@@ -1,15 +1,16 @@
 require 'rails_helper'
+require 'active_interaction'
 
 RSpec.describe TriggerDownloadAndStoreVideoFromYoutube do
+  subject do
+    TriggerDownloadAndStoreVideoFromYoutube.run!(youtube_url:)
+  end
+
   let(:youtube_url) { 'https://www.youtube.com/watch?v=ZnjJpa1LBOY' }
   let(:key) { SecureRandom.hex(16) }
 
   before do
     allow(SecureRandom).to receive(:hex).with(16).and_return(key)
-  end
-
-  subject do
-    TriggerDownloadAndStoreVideoFromYoutube.run!(youtube_url:)
   end
 
   describe 'validation' do

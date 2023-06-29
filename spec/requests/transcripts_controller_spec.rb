@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe Admin::TranscriptsController do
+RSpec.describe TranscriptsController do
   let(:account_manager) { create(:user) }
   let(:organisation) { create(:organisation, account_manager:) }
   let(:user) { create(:user, organisation:) }

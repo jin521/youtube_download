@@ -1,8 +1,10 @@
-class DownloadAndStoreVideoFromYoutube
+# frozen_string_literal: true
 
+# The  class is responsible for downloading a video from YouTube and storing it in a storage service.
+class DownloadAndStoreVideoFromYoutube
   include Sidekiq::Job
 
-  sidekiq_options :retry => 0
+  sidekiq_options retry: 0
 
   CACHE_TTL = 5.minutes
 
@@ -14,15 +16,15 @@ class DownloadAndStoreVideoFromYoutube
     file = Tempfile.new
     file.binmode
 
-    update_status("started")
+    update_status('started')
 
     video_file_details = get_video_file_details(@video_id)
 
-    download_video_to_file!(file, :media_url => video_file_details["url"])
+    download_video_to_file!(file, media_url: video_file_details['url'])
 
-    url = upload_to_storage_service(file, :mime_type => video_file_details["mimeType"])
+    url = upload_to_storage_service(file, mime_type: video_file_details['mimeType'])
 
-    update_status("done")
+    update_status('done')
     Cache.setex("#{@status_key}:url", CACHE_TTL, url)
   ensure
     file.close
@@ -32,12 +34,12 @@ class DownloadAndStoreVideoFromYoutube
   private
 
   def get_video_id_from_youtube_url(url)
-    id = ""
-    url = url.gsub(/(>|<)/i, "").split(/(vi\/|v=|\/v\/|youtu\.be\/|\/embed\/)/)
+    id = ''
+    url = url.gsub(/(>|<)/i, '').split(%r{(vi/|v=|/v/|youtu\.be/|/embed/)})
     if url[2].nil?
       id = url
     else
-      id = url[2].split(/[^0-9a-z_\-]/i)
+      id = url[2].split(/[^0-9a-z_-]/i)
       id = id[0]
     end
     id
@@ -45,30 +47,30 @@ class DownloadAndStoreVideoFromYoutube
 
   def get_video_file_details(video_id)
     payload = {
-      :context => {
-        :client => {
+      context: {
+        client: {
           # As discovered by https://github.com/yt-dlp/yt-dlp/blob/master/yt_dlp/extractor/youtube.py#L238
           # these particular values make the Youtube API return the downloadable video URL
-          :clientName => "ANDROID",
-          :clientVersion => "16.49"
+          clientName: 'ANDROID',
+          clientVersion: '16.49'
         }
       },
-      :videoId => video_id
+      videoId: video_id
     }.to_json
 
-    end_point = "https://www.youtube.com/youtubei/v1/player"
-    headers = { "Content-Type" => "application/json" }
+    end_point = 'https://www.youtube.com/youtubei/v1/player'
+    headers = { 'Content-Type' => 'application/json' }
 
     response = Faraday.post(end_point, payload, headers)
 
     if response.status != 200
-      update_status("error")
-      raise "Youtube Video Request Failed"
+      update_status('error')
+      raise 'Youtube Video Request Failed'
     end
 
     data = JSON.parse(response.body.to_s)
 
-    data["streamingData"]["formats"].find { |format| format["itag"] == 18 }
+    data['streamingData']['formats'].find { |format| format['itag'] == 18 }
   end
 
   def download_video_to_file!(file, media_url:)
@@ -76,8 +78,8 @@ class DownloadAndStoreVideoFromYoutube
 
     request.on_headers do |response|
       if response.code != 200
-        update_status("error")
-        raise "Youtube Video Download Failed"
+        update_status('error')
+        raise 'Youtube Video Download Failed'
       end
     end
 
@@ -94,10 +96,10 @@ class DownloadAndStoreVideoFromYoutube
     tmp_filename = "#{@video_id}_#{SecureRandom.hex(16)}.mp4"
 
     GoogleStorageService.new(@bucket_name).upload(
-      :file => file,
-      :upload_path => tmp_filename,
-      :options => {
-        :content_type => mime_type
+      file:,
+      upload_path: tmp_filename,
+      options: {
+        content_type: mime_type
       }
     ).url
   end
@@ -105,5 +107,4 @@ class DownloadAndStoreVideoFromYoutube
   def update_status(value)
     Cache.setex("#{@status_key}:status", CACHE_TTL, value)
   end
-
 end
